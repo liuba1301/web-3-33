@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор калорий</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">life now</a>
+        
+        <input class="side-menu" type="checkbox" id="side-menu"/>
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+
+        <nav class="nav">
+            <ul class="menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="prevention_SMOKING.html">Зависимостям.Нет</a></li>
+                <li><a href="for-older.html">Для тех, кому за...</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Калькулятор калорий</h1>
+        <div class="text">
+            <p>Расчет суточной потребности в калориях поможет вам составить правильный рацион питания для поддержания здорового образа жизни.</p>
+        </div>
+        
+        <div class="calculator-section">
+            <h2>Калькулятор калорий</h2>
+            <form id="calorieCalculator" class="calculator-form">
+                <div class="form-group">
+                    <label for="height">Рост (см):</label>
+                    <input type="number" id="height" name="height" required min="100" max="250">
+                </div>
+                
+                <div class="form-group">
+                    <label for="weight">Вес (кг):</label>
+                    <input type="number" id="weight" name="weight" required min="30" max="200">
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Возраст:</label>
+                    <input type="number" id="age" name="age" required min="18" max="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="activity">Уровень активности:</label>
+                    <select id="activity" name="activity" required>
+                        <option value="очень низкая">Очень низкая</option>
+                        <option value="низкая">Низкая</option>
+                        <option value="средняя">Средняя</option>
+                        <option value="высокая">Высокая</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Пол:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="male" name="gender" value="male" required>
+                        <label for="male">Мужской</label>
+                        <input type="radio" id="female" name="gender" value="female" required>
+                        <label for="female">Женский</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="calculate-btn">Рассчитать</button>
+            </form>
+            
+            <div id="result" class="result-section"></div>
+        </div>
+
+    </main>
+
+    <script>
+        document.getElementById('calorieCalculator').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                height: document.getElementById('height').value,
+                weight: document.getElementById('weight').value,
+                age: document.getElementById('age').value,
+                activity: document.getElementById('activity').value,
+                gender: document.querySelector('input[name="gender"]:checked').value
+            };
+
+            // Отправляем запрос на PHP-скрипт
+            fetch('/calculate.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').innerHTML = 'Ошибка: ' + data.error;
+                } else {
+                    document.getElementById('result').innerHTML = data.message;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = 'Произошла ошибка при расчете. Пожалуйста, попробуйте позже.';
+                console.error('Ошибка:', error);
+            });
+        });
+    </script>
+</body>
+</html> 
